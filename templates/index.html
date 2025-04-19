@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Donate & Transform Lives{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Donation Focus -->
+<section class="hero" style="background: linear-gradient(135deg, #FF6B6B, #FFD93D); padding: 120px 20px; text-align: center; color: #fff; position: relative;">
+  <div x-data="donationSection()" x-init="init()">
+    <h1 style="font-size: 3.5em; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+      Transform Lives Today
+    </h1>
+    <p style="font-size: 1.5em; margin: 20px 0; font-weight: 500; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+      Every donation fuels real change.
+    </p>
+    
+    <!-- Donation Input and CTA -->
+    <div style="margin: 40px 0;">
+      <sl-input type="number" size="large" placeholder="Enter Amount ($)" x-model.number="donation" style="width: 250px; font-size: 1.2em; text-align: center; border: none; border-radius: 8px; padding: 10px;"></sl-input>
+    </div>
+    <sl-button variant="primary" size="large" style="font-size: 1.3em; padding: 12px 24px; border-radius: 8px;" @click="donate()">
+      Donate Now
+    </sl-button>
+    
+    <!-- Animated Donation Impact Counter -->
+    <div style="margin-top: 40px;">
+      <h3 style="font-size: 1.8em;">Join <span x-text="donationCount" style="font-weight: bold;"></span> supporters!</h3>
+    </div>
+  </div>
+  
+  <!-- Decorative animated overlay -->
+  <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: rgba(255,255,255,0.2); clip-path: polygon(0 0, 100% 100%, 0 100%);"></div>
+</section>
+
+<!-- Fundraising Progress Section -->
+<section class="fundraising-progress" style="padding: 50px 20px; background: #fff; text-align: center;">
+  <div x-data="donationSection()" x-init="">
+    <h2 style="font-size: 2.5em; color: #333;">Fundraising Progress</h2>
+    <p style="font-size: 1.2em; color: #555; margin-bottom: 20px;">$<span x-text="donationTotal.toLocaleString()"></span> raised of $1,000,000 goal</p>
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; background: #eee; border-radius: 10px; height: 30px; overflow: hidden;">
+      <div :style="{ width: progressPercent + '%', background: 'hsl(' + progressHue + ', 100%, 50%)', height: '100%' }"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Real-Time Donation Feed Section -->
+<section class="donation-feed" style="padding: 50px 20px; background: #F7F9FC; text-align: center;">
+  <h2 style="font-size: 2.5em; color: #333;">Recent Donations</h2>
+  <div style="max-width: 600px; margin: 20px auto; text-align: left;">
+    <template x-for="entry in donationFeed" :key="entry.time">
+      <div style="padding: 10px; border-bottom: 1px solid #ddd;">
+        <strong>$<span x-text="entry.amount.toFixed(2)"></span></strong> donated at <span x-text="entry.time"></span>
+      </div>
+    </template>
+    <template x-if="donationFeed.length === 0">
+      <p style="color: #777;">No donations yet. Be the first to donate!</p>
+    </template>
+  </div>
+</section>
+
+<!-- Impact Section: How Donations Change Lives -->
+<section class="impact" style="padding: 70px 20px; background: #F7F9FC; text-align: center;">
+  <h2 style="font-size: 2.8em; color: #333;">Your Impact</h2>
+  <p style="font-size: 1.3em; margin-bottom: 40px; color: #555;">
+    See the difference your generosity makes across the globe.
+  </p>
+  <div class="grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+    <div class="card" style="background: #fff; flex: 1 1 250px; max-width: 300px; margin: 10px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <h3 style="font-size: 2em; color: #FF6B6B;">1,000+</h3>
+      <p style="font-size: 1.1em; color: #666;">Lives Changed</p>
+    </div>
+    <div class="card" style="background: #fff; flex: 1 1 250px; max-width: 300px; margin: 10px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <h3 style="font-size: 2em; color: #FFD93D;">500+</h3>
+      <p style="font-size: 1.1em; color: #666;">Communities Supported</p>
+    </div>
+    <div class="card" style="background: #fff; flex: 1 1 250px; max-width: 300px; margin: 10px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <h3 style="font-size: 2em; color: #6BCB77;">300+</h3>
+      <p style="font-size: 1.1em; color: #666;">Projects Funded</p>
+    </div>
+  </div>
+</section>
+
+<!-- Magazine-Style Section: Featured Articles -->
+<section class="featured-articles" style="padding: 70px 20px; background: #FAFAFA; text-align: center;">
+  <h2 style="font-size: 2.8em; color: #333;">Explore Our Stories</h2>
+  <p style="font-size: 1.3em; margin-bottom: 40px; color: #555;">Discover inspiring articles and features on how donations are transforming lives.</p>
+  <div class="grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+    <!-- Card 1 -->
+    <a href="/articles/impact" class="card-link" style="text-decoration: none; color: inherit;">
+      <div class="card" style="background: #fff; width: 300px; margin: 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;">
+        <img src="{{ url_for('static', filename='images/smiling_schoolgirl.jpg') }}" alt="Impact Story" style="width: 100%; height: 200px; object-fit: cover;">
+        <div style="padding: 20px;">
+          <h3 style="font-size: 1.8em;"> Impacts</h3>
+          <p style="font-size: 1em; color: #666;">Read how your contributions change lives across the globe.</p>
+        </div>
+      </div>
+    </a>
+    <!-- Card 2 -->
+    <a href="/articles/innovation" class="card-link" style="text-decoration: none; color: inherit;">
+      <div class="card" style="background: #fff; width: 300px; margin: 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;">
+        <img src="{{ url_for('static', filename='images/plantain_chips_factory.jpg') }}" alt="Innovation" style="width: 100%; height: 200px; object-fit: cover;">
+        <div style="padding: 20px;">
+          <h3 style="font-size: 1.8em;">Innovations</h3>
+          <p style="font-size: 1em; color: #666;">Discover new ways we are transforming communities.</p>
+        </div>
+      </div>
+    </a>
+    <!-- Card 3 -->
+    <a href="/articles/community" class="card-link" style="text-decoration: none; color: inherit;">
+      <div class="card" style="background: #fff; width: 300px; margin: 10px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;">
+        <img src="{{ url_for('static', filename='images/community_entertainment.jpg') }}" alt="Community Stories" style="width: 100%; height: 200px; object-fit: cover;">
+        <div style="padding: 20px;">
+          <h3 style="font-size: 1.8em;">Community Stories</h3>
+          <p style="font-size: 1em; color: #666;">See how our community initiatives create lasting change.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Testimonials Slider to Build Trust -->
+<section class="testimonials" style="padding: 70px 20px; background: linear-gradient(135deg, #6BCB77, #FFD93D); color: #fff; text-align: center;">
+  <h2 style="font-size: 2.8em;">What Our Donors Say</h2>
+  <sl-carousel style="max-width: 800px; margin: 40px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+    <sl-carousel-item style="padding: 40px;">
+      <blockquote style="font-size: 1.3em; margin: 0 0 20px; font-style: italic;">"This platform makes every donation feel powerful. I see real impact!"</blockquote>
+      <p style="font-weight: bold;">- Alex, Donor</p>
+    </sl-carousel-item>
+    <sl-carousel-item style="padding: 40px;">
+      <blockquote style="font-size: 1.3em; margin: 0 0 20px; font-style: italic;">"Transparent, impactful, and inspiring. I donate here because I believe in change."</blockquote>
+      <p style="font-weight: bold;">- Jamie, Philanthropist</p>
+    </sl-carousel-item>
+    <sl-carousel-item style="padding: 40px;">
+      <blockquote style="font-size: 1.3em; margin: 0 0 20px; font-style: italic;">"A small donation here goes a long way. I'm proud to be a part of this community."</blockquote>
+      <p style="font-weight: bold;">- Casey, Volunteer</p>
+    </sl-carousel-item>
+  </sl-carousel>
+</section>
+
+<!-- Donation Incentives Section -->
+<section class="incentives" style="padding: 70px 20px; background: #fff; text-align: center;">
+  <h2 style="font-size: 2.8em; color: #333;">Exclusive Donor Benefits</h2>
+  <p style="font-size: 1.3em; margin: 30px 0; color: #555;">
+    Donate today and unlock exclusive updates, VIP event invites, and behind-the-scenes access.
+  </p>
+  <sl-button variant="success" size="large" style="font-size: 1.3em; padding: 12px 24px; border-radius: 8px;">Learn More</sl-button>
+</section>
+
+<!-- Alpine.js Donation Section Script with Progress Bar and Real-Time Feed -->
+<script>
+  function donationSection() {
+    return {
+      donation: 50,
+      donationTotal: 0,
+      donationFeed: [],
+      donationCount: 0,
+      goal: 1000000,
+      init() {
+        // Simulate initial donation count animation
+        const targetCount = 1234;
+        const stepTime = Math.max(5, 2000 / targetCount);
+        const counterInterval = setInterval(() => {
+          if (this.donationCount < targetCount) {
+            this.donationCount++;
+          } else {
+            clearInterval(counterInterval);
+          }
+        }, stepTime);
+      },
+      get progressPercent() {
+        return Math.min((this.donationTotal / this.goal) * 100, 100);
+      },
+      get progressHue() {
+        // Interpolate hue from 0 (red) to 120 (green)
+        return Math.min((this.donationTotal / this.goal) * 120, 120);
+      },
+      donate() {
+        // Increase donation total and update donation feed with current donation and time
+        this.donationTotal += this.donation;
+        this.donationFeed.push({
+          amount: this.donation,
+          time: new Date().toLocaleTimeString()
+        });
+        // Increase supporter count
+        this.donationCount++;
+        // Show confirmation message (replace with actual donation integration)
+        alert(`Thank you for donating $${this.donation}! Your support makes a huge impact.`);
+        // Reset donation input if needed
+        this.donation = 50;
+      }
+    }
+  }
+</script>
+{% endblock %}
